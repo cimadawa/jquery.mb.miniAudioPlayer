@@ -140,13 +140,14 @@
 			volumeLevels        : 12,
 			showControls        : true,
 			showVolumeLevel     : true,
+            activeVolumeControl  : true,
 			showTime            : true,
 			showRew             : true,
 			addShadow           : true,
 			downloadable        : false,
 			downloadablesecurity: false,
 			downloadPage        : null,
-			swfPath             : "inc/",
+			swfPath             : "/static/js/lib/Jplayer/inc/",
 			onReady             : function () {},
 			onPlay              : function () {},
 			onEnd               : function () {}
@@ -300,7 +301,11 @@
 
 				var $loadBar = jQuery("<div/>").addClass("jp-load-bar").attr("id", "loadBar_" + playerID);
 				var $playBar = jQuery("<div/>").addClass("jp-play-bar").attr("id", "playBar_" + playerID);
-				$progress.append($loadBar);
+
+                $playBox.attr('title', 'Play');
+                $loadBar.attr('title', 'Seek');
+
+                $progress.append($loadBar);
 				$loadBar.append($playBar);
 				$controls.append($titleBox).append($progress);
 
@@ -458,27 +463,28 @@
 									jQuery(this).css({opacity: 1})
 								}
 						);
-
-						$volumeBox.on(jQuery.mbMiniPlayer.eventEnd,
-								function () {
-									if (jQuery(this).hasClass("mute")) {
-										jQuery(this).removeClass("mute");
-										jQuery(this).html(jQuery.mbMiniPlayer.icon.volume);
-										el.jPlayer("volume", player.opt.vol);
-									} else {
-										jQuery(this).addClass("mute");
-										jQuery(this).html(jQuery.mbMiniPlayer.icon.volumeMute);
-										player.opt.vol = player.opt.volume;
-										el.jPlayer("volume", 0);
-									}
-								}).hover(
-								function () {
-									jQuery(this).css({opacity: .8})
-								},
-								function () {
-									jQuery(this).css({opacity: 1})
-								}
-						);
+                        if (player.opt.activeVolumeControl) {
+                            $volumeBox.on(jQuery.mbMiniPlayer.eventEnd,
+                                    function () {
+                                        if (jQuery(this).hasClass("mute")) {
+                                            jQuery(this).removeClass("mute");
+                                            jQuery(this).html(jQuery.mbMiniPlayer.icon.volume);
+                                            el.jPlayer("volume", player.opt.vol);
+                                        } else {
+                                            jQuery(this).addClass("mute");
+                                            jQuery(this).html(jQuery.mbMiniPlayer.icon.volumeMute);
+                                            player.opt.vol = player.opt.volume;
+                                            el.jPlayer("volume", 0);
+                                        }
+                                    }).hover(
+                                    function () {
+                                        jQuery(this).css({opacity: .9})
+                                    },
+                                    function () {
+                                        jQuery(this).css({opacity: 1})
+                                    }
+                            );
+                        }
 
 						$rewBox.on(jQuery.mbMiniPlayer.eventEnd, function () {
 							el.jPlayer("playHead", 0);
@@ -521,8 +527,8 @@
 					smoothPlayBar      : true,
 					volume             : player.opt.volume,
 					swfPath            : player.opt.swfPath,
-					solution           : 'html, flash',
-//					solution           : player.opt.isIE && $.browser.version<11 ? 'flash' : 'html, flash',
+//					solution           : 'html, flash',
+					solution           : player.opt.isIE ? 'flash' : 'html, flash',
 					preload            : isDevice ? 'none' : 'metadata',
 					cssSelectorAncestor: "#" + playerID, // Remove the ancestor css selector clause
 					cssSelector        : {
